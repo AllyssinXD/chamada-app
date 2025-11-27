@@ -3,6 +3,7 @@ import type ChamadaModel from "./models/ChamadaModel";
 import {
   addCustomInput,
   deleteCustomInput,
+  exportPresences,
   getAllPresencesFromChamada,
   getChamada,
   updateChamada,
@@ -102,6 +103,18 @@ function EditChamada() {
       console.error("Erro ao salvar alterações:", err);
     }
   };*/
+  const exportXLSM = async ()=>{
+    if(!chamada) return;
+    const file = await exportPresences(chamada?._id);
+    // Criar um link para download
+    const url = window.URL.createObjectURL(new Blob([file]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `presencas-${chamada.nome.split(" ").join("")}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
 
   // Função para salvar alterações no backend
   const saveAllChanges = async () => {
@@ -487,6 +500,7 @@ function EditChamada() {
           <CardTitle>Presenças</CardTitle>
         </CardHeader>
         <CardContent>
+          <Button onClick={exportXLSM}>Exportar</Button>
           <Table>
             <TableHeader>
               <TableRow>

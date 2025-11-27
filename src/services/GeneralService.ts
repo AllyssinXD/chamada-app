@@ -16,6 +16,22 @@ const getAllChamadas = async ()=>{
     }
 }
 
+const exportPresences = async (id:string)=>{
+    try {
+        const response = await axios.get(import.meta.env.VITE_API_URL + "/presence/export-presences/"+id, {
+            responseType: "blob"
+        })
+        if (!response.data) throw new Error("Não foi possivel pegar as chamadas.")
+        return response.data;
+    } catch (err: any) {
+        if (err instanceof AxiosError)
+            if(err.response) return err.response.data.message;
+            else return err.message;
+        else return err;
+    }
+}
+
+
 const getChamada = async (id: string)=>{
     try {
         const response = await axios.get(import.meta.env.VITE_API_URL + "/chamada/"+id)
@@ -141,4 +157,4 @@ const updateChamada = async (chamada: ChamadaModel, customInputs: CustomInputs[]
     }
 }
 
-export {createChamada, getAllChamadas, updateChamada, deleteCustomInput, getChamada, getAllPresencesFromChamada, addCustomInput};
+export {createChamada, exportPresences, getAllChamadas, updateChamada, deleteCustomInput, getChamada, getAllPresencesFromChamada, addCustomInput};
