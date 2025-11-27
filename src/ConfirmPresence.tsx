@@ -12,6 +12,7 @@ import { Button } from "./components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 import type ChamadaModel from "./models/ChamadaModel";
 import { getChamada } from "./services/GeneralService";
+import {v4} from "uuid"
 
 interface CustomInput {
   _id: string;
@@ -28,6 +29,7 @@ function ConfirmPresencePage() {
   const { idChamada } = useParams();
 
   const [id, setId] = useState(idChamada);
+  const [uuid, setUuid] = useState<string | null>(null);
   const [chamada, setChamada] = useState<ChamadaModel>();
   const [nome, setNome] = useState("");
   const [ip, setIp] = useState("");
@@ -59,6 +61,7 @@ function ConfirmPresencePage() {
       .post(import.meta.env.VITE_API_URL + "/presence/" + id, {
         nome,
         ip,
+        uuid,
         lag,
         long,
         customInputs: customInputValues,
@@ -101,6 +104,12 @@ function ConfirmPresencePage() {
   };
 
   useEffect(() => {
+    if(!localStorage.getItem("uuid")) {
+      const id = v4()
+      localStorage.setItem("uuid", id)
+    }
+    
+    setUuid(localStorage.getItem("uuid"))
     // Fetch public IP from ipify API
     const fetchIP = async () => {
       try {
