@@ -83,7 +83,6 @@ function ConfirmPresencePage() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         console.log(position);
-        console.log(position);
         setLag(position.coords.latitude);
         setLong(position.coords.longitude);
       },
