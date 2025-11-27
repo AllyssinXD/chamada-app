@@ -5,7 +5,6 @@ import { Button } from "./components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 import { useAuth } from "./contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { DatePicker } from "./components/ui/date-picker";
 
 function AdminLogin() {
   const { login } = useAuth(); // Função de login do AuthContext

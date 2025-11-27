@@ -9,7 +9,7 @@ import {
   type CustomInputs,
   type GetPresencesResponse,
 } from "./services/GeneralService";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import useProtectedRoute from "./hooks/useProtectedRoute";
 import { Input } from "./components/ui/input";
