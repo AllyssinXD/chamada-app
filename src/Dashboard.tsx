@@ -24,7 +24,7 @@ function Dashboard() {
   const handleCriarChamada = async () => {
     fetchLocation();
     const newChamada = await createChamada(lag, long);
-    navigate("/manage/chamada/" + newChamada._id);
+    navigate("/chamada/" + newChamada._id);
   };
 
   const fetchLocation = () => {
@@ -73,7 +73,7 @@ function Dashboard() {
               <TableRow
                 key={item._id}
                 onClick={() => {
-                  navigate("/manage/chamada/" + item._id);
+                  navigate("/chamada/" + item._id);
                 }}
               >
                 <TableCell className="font-medium">{item.nome}</TableCell>

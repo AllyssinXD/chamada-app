@@ -7,7 +7,7 @@ function useProtectedRoute() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!auth.user) navigate("/manage/login");
+    if (!auth.user) navigate("/login");
   }, []);
 
   return null;
