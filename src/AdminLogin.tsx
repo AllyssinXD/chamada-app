@@ -22,7 +22,7 @@ function AdminLogin() {
     login(username, password)
       .then((res) => {
         setError(JSON.stringify(res));
-        if (res) navigate("/manage/dashboard");
+        if (res) navigate("/");
       })
       .catch((err) => {
         if (err.response) setError(err.response.data.message);

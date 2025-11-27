@@ -15,8 +15,9 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <AuthContextProvider>
           <Routes>
+            <Route path="/" element={<Dashboard />} />{" "}
+            {/* Dashboard is now the index */}
             <Route path="login" element={<AdminLogin />} />
-            <Route index path="dashboard" element={<Dashboard />} />
             <Route path="chamada/:id" element={<EditChamada />} />
             <Route path="confirmar-presenca">
               <Route index element={<ConfirmPresencePage />} />
