@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")!).render(
             {/* Dashboard is now the index */}
             <Route path="login" element={<AdminLogin />} />
             <Route path="chamada/:id" element={<EditChamada />} />
-            <Route path="confirmar-presenca">
+            <Route path="/confirmar-presenca">
               <Route index element={<ConfirmPresencePage />} />
               <Route path=":idChamada" element={<ConfirmPresencePage />} />
             </Route>
