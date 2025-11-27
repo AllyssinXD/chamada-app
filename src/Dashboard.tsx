@@ -5,9 +5,7 @@ import { createChamada, getAllChamadas } from "./services/GeneralService";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,

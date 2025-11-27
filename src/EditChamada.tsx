@@ -13,13 +13,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import useProtectedRoute from "./hooks/useProtectedRoute";
 import { Input } from "./components/ui/input";
-import {
-  ArrowDownIcon,
-  DeleteIcon,
-  EraserIcon,
-  LinkIcon,
-  XIcon,
-} from "lucide-react";
+import { ArrowDownIcon, LinkIcon, XIcon } from "lucide-react";
 import { Button } from "./components/ui/button";
 import {
   Popover,
@@ -51,7 +45,6 @@ function EditChamada() {
   const [customInputs, setCustomInputs] = useState<CustomInputs[]>([]);
   const [presences, setPresences] = useState<GetPresencesResponse | null>(null);
   const { id } = useParams();
-  const pathname = useLocation().pathname;
 
   // Função para alternar o modo de edição
   const toggleEdit = (key: string) => {
@@ -100,7 +93,7 @@ function EditChamada() {
   };
 
   // Função para salvar alterações no backend
-  const saveChanges = async (key: string, value: string | Date) => {
+  /*const saveChanges = async (key: string, value: string | Date) => {
     if (!id || !chamada) return;
     try {
       //await updateChamada(id, { [key]: value });
@@ -108,7 +101,7 @@ function EditChamada() {
     } catch (err) {
       console.error("Erro ao salvar alterações:", err);
     }
-  };
+  };*/
 
   // Função para salvar alterações no backend
   const saveAllChanges = async () => {
