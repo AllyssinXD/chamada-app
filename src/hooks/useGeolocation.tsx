@@ -27,12 +27,13 @@ export default function useGeolocation() {
           lat: position.coords.latitude,
           long: position.coords.longitude,
         });
-        setLoading(false);
+        setTimeout(() => setLoading(false), 3000);
       },
       (err) => {
         console.error(err);
         setError("Falha ao obter localização. Permita o acesso.");
-        setLoading(false);
+
+        setTimeout(() => setLoading(false), 3000);
       },
       {
         enableHighAccuracy: true, // Melhor precisão
