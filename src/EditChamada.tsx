@@ -165,6 +165,7 @@ function EditChamada() {
     const fetchChamada = async () => {
       const fetchedChamada = await getChamada(id);
       setChamada(fetchedChamada);
+      console.log(fetchedChamada);
     };
     const fetchPresences = async () => {
       const fetchedPresences = await getAllPresencesFromChamada(id);
@@ -369,7 +370,13 @@ function EditChamada() {
                             onClick={() => {
                               const updated = customInputs.map((i) =>
                                 i._id === input._id
-                                  ? { ...i, type: "dropdown" }
+                                  ? {
+                                      ...i,
+                                      type: "dropdown",
+                                      meta: {
+                                        options: [{ label: "Novo Item" }],
+                                      },
+                                    }
                                   : i
                               );
 
@@ -400,6 +407,7 @@ function EditChamada() {
                             i._id == input._id ? input : i
                           );
                           setCustomInputs(newInputs);
+                          toggleEdit("customInputs");
                         }}
                       />
                     </Field>
@@ -410,7 +418,65 @@ function EditChamada() {
                       <XIcon />
                     </Button>
                   </div>
-                  {input.type == "dropdown" && <div></div>}
+                  {input.type == "dropdown" && (
+                    <>
+                      <div className="space-y-1">
+                        {input.meta.options.map((option: any, i: number) => {
+                          return (
+                            <div className="flex gap-3">
+                              <Input
+                                value={option.label}
+                                onChange={(e) => {
+                                  input.meta.options[i] = {
+                                    label: e.target.value,
+                                  };
+                                  const newInputs = customInputs.map((i) =>
+                                    i._id == input._id ? input : i
+                                  );
+                                  setCustomInputs(newInputs);
+                                  toggleEdit("customInputs");
+                                }}
+                              />
+                              <Button
+                                onClick={() => {
+                                  input.meta.options =
+                                    input.meta.options.filter(
+                                      (_: number, j: number) => j != i
+                                    );
+                                  const newInputs = customInputs.map((i) =>
+                                    i._id == input._id ? input : i
+                                  );
+                                  setCustomInputs(newInputs);
+                                  toggleEdit("customInputs");
+                                }}
+                                variant={"destructive"}
+                              >
+                                <XIcon />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <Button
+                        onClick={() => {
+                          let oldMeta = input.meta;
+                          oldMeta.options.push({ label: "Novo Item" });
+                          input.meta = oldMeta;
+                          const newInputs = customInputs.map((i) =>
+                            i._id == input._id ? input : i
+                          );
+                          setCustomInputs(newInputs);
+                          handleChange(
+                            "customInputs",
+                            JSON.stringify(newInputs)
+                          );
+                          toggleEdit("customInputs");
+                        }}
+                      >
+                        Adicionar Item
+                      </Button>
+                    </>
+                  )}
                 </>
               );
             })}

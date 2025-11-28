@@ -51,6 +51,8 @@ export interface CustomInputs {
     id_chamada: string,
     label: string, 
     type: string,
+    // Configurações adicionais do input
+    meta: any,
     placeholder: string
 }
 
