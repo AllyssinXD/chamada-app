@@ -12,7 +12,6 @@ import { Button } from "./components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 import type ChamadaModel from "./models/ChamadaModel";
 import { getChamada } from "./services/GeneralService";
-import { v4 } from "uuid";
 import useGeolocation from "./hooks/useGeolocation";
 import {
   Globe,
@@ -23,6 +22,7 @@ import {
   ShieldQuestion,
   Smartphone,
 } from "lucide-react";
+import { useVisitorData } from "@fingerprintjs/fingerprintjs-pro-react";
 
 interface CustomInput {
   _id: string;
@@ -41,7 +41,12 @@ function ConfirmPresencePage() {
 
   const [firstLoad, setFirstLoad] = useState(true);
   const [id, setId] = useState(idChamada);
-  const [uuid, setUuid] = useState<string | null>(null);
+  const {
+    isLoading: fpLoading,
+    error: fpError,
+    data,
+    getData,
+  } = useVisitorData({ extendedResult: true }, { immediate: true });
   const [chamada, setChamada] = useState<ChamadaModel>();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [nome, setNome] = useState("");
@@ -55,16 +60,31 @@ function ConfirmPresencePage() {
 
   const confirmPresence = () => {
     setButtonDisabled(true);
+    let e = null;
+
+    if (!data) {
+      e = true;
+      setError(
+        "Identificação fingerprint não pôde ser carregada. Desative ad-blockers"
+      );
+    }
     if (!id) {
+      e = true;
       setError("Id da chamada não foi provido");
-      return;
     }
     if (!ip) {
+      e = true;
       setError("Não foi possível obter o IP");
-      return;
     }
     if (lat === null || long === null) {
+      e = true;
       setError("Não foi possível obter sua localização");
+    }
+
+    if (e) {
+      setTimeout(() => {
+        setButtonDisabled(false);
+      }, 200);
       return;
     }
 
@@ -72,7 +92,7 @@ function ConfirmPresencePage() {
       .post(import.meta.env.VITE_API_URL + "/presence/" + id, {
         nome,
         ip,
-        uuid,
+        uuid: data!.visitorId,
         lag: lat,
         long,
         customInputs: customInputValues,
@@ -98,17 +118,11 @@ function ConfirmPresencePage() {
   };
 
   useEffect(() => {
-    if (!localStorage.getItem("uuid")) {
-      const id = v4();
-      localStorage.setItem("uuid", id);
-    }
-
     if (localStorage.getItem("first")) {
       setFirstLoad(false);
       localStorage.setItem("first", "true");
     }
 
-    setUuid(localStorage.getItem("uuid"));
     // Fetch public IP from ipify API
     const fetchIP = async () => {
       try {
@@ -126,12 +140,18 @@ function ConfirmPresencePage() {
 
     fetchIP();
     requestLocation();
+    getData({ ignoreCache: true });
     if (idChamada) fetchChamadaDetails();
   }, []);
 
   useEffect(() => {
     if (error) setError(error);
-  }, [error]);
+    if (fpError) {
+      setError(
+        "Erro ao carregar fingerprint do dispositivo. Tente desativar Ad-blockers"
+      );
+    }
+  }, [error, fpError]);
 
   useEffect(() => {
     console.log(lat, long);
@@ -141,7 +161,7 @@ function ConfirmPresencePage() {
     }
   }, [lat, long]);
 
-  if (loading || !chamada)
+  if (loading || fpLoading || !chamada)
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
         {/*Carregando Geolocalização*/}
