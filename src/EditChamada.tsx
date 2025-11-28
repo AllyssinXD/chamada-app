@@ -495,6 +495,7 @@ function EditChamada() {
                 max={5000}
                 value={chamada?.toleranceMeters}
                 onChange={(e) => {
+                  toggleEdit("toleranceMeters");
                   handleChange("toleranceMeters", e.target.value);
                 }}
               />
