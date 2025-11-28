@@ -25,13 +25,13 @@ import {
   ShieldQuestion,
   Smartphone,
 } from "lucide-react";
-import { useVisitorData } from "@fingerprintjs/fingerprintjs-pro-react";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu";
+import { v4 } from "uuid";
 
 import Realistic from "react-canvas-confetti/dist/presets/realistic";
 
@@ -45,12 +45,7 @@ function ConfirmPresencePage() {
 
   const [firstLoad, setFirstLoad] = useState(true);
   const [id, setId] = useState(idChamada);
-  const {
-    isLoading: fpLoading,
-    error: fpError,
-    data,
-    getData,
-  } = useVisitorData({ extendedResult: true }, { immediate: true });
+  const [uuid, setUuid] = useState("");
   const [chamada, setChamada] = useState<ChamadaModel>();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [nome, setNome] = useState("");
@@ -66,11 +61,9 @@ function ConfirmPresencePage() {
     setButtonDisabled(true);
     let e = null;
 
-    if (!data) {
+    if (!uuid) {
       e = true;
-      setError(
-        "Identificação fingerprint não pôde ser carregada. Desative ad-blockers"
-      );
+      setError("Identificação unica nula");
     }
     if (!id) {
       e = true;
@@ -96,7 +89,7 @@ function ConfirmPresencePage() {
       .post(import.meta.env.VITE_API_URL + "/presence/" + id, {
         nome,
         ip,
-        uuid: data!.visitorId,
+        uuid,
         lag: lat,
         long,
         customInputs: customInputValues,
@@ -122,6 +115,13 @@ function ConfirmPresencePage() {
   };
 
   useEffect(() => {
+    if (!localStorage.getItem("uuid")) {
+      const id = v4();
+      localStorage.setItem("uuid", id);
+    }
+
+    setUuid(localStorage.getItem("uuid")!);
+
     if (localStorage.getItem("first")) {
       setFirstLoad(false);
       localStorage.setItem("first", "true");
@@ -144,18 +144,12 @@ function ConfirmPresencePage() {
 
     fetchIP();
     requestLocation();
-    getData({ ignoreCache: true });
     if (idChamada) fetchChamadaDetails();
   }, []);
 
   useEffect(() => {
     if (error) setError(error);
-    if (fpError) {
-      setError(
-        "Erro ao carregar fingerprint do dispositivo. Tente desativar Ad-blockers"
-      );
-    }
-  }, [error, fpError]);
+  }, [error]);
 
   useEffect(() => {
     console.log(lat, long);
@@ -165,7 +159,7 @@ function ConfirmPresencePage() {
     }
   }, [lat, long]);
 
-  if (loading || fpLoading || !chamada)
+  if (loading || !chamada)
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
         {/*Carregando Geolocalização*/}
