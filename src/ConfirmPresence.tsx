@@ -316,7 +316,7 @@ function ConfirmPresencePage() {
               </FieldGroup>
               <FieldGroup>
                 <Button disabled={buttonDisabled} onClick={confirmPresence}>
-                  {buttonDisabled ? (
+                  {!buttonDisabled ? (
                     "Confirmar Presença"
                   ) : (
                     <Loader2Icon className="animate-spin" />
