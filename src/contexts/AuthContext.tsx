@@ -23,12 +23,6 @@ export function AuthContextProvider({
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const saveUserInfo = async () => {
-    const response = await getAdmin();
-    if (!response) return;
-    setUser(response);
-  };
-
   const login = async (username: string, password: string) => {
     logout();
 
@@ -37,6 +31,7 @@ export function AuthContextProvider({
 
     setToken(response.token);
     axios.defaults.headers["Authorization"] = "Bearer " + response.token;
+    localStorage.setItem("token", response.token);
     await saveUserInfo();
     return true;
   };
@@ -44,22 +39,42 @@ export function AuthContextProvider({
   const logout = () => {
     setToken(null);
     setUser(null);
-    axios.defaults.headers.delete["Authorization"];
+    delete axios.defaults.headers.common["Authorization"];
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-      axios.defaults.headers["Authorization"] = "Bearer " + storedToken;
-      saveUserInfo().then(() => {
-        setIsLoading(false);
-        return;
-      });
-    }
-    setIsLoading(false);
+    const loadUser = async () => {
+      setIsLoading(true);
+
+      const storedToken = localStorage.getItem("token");
+
+      if (storedToken) {
+        setToken(storedToken);
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + storedToken;
+
+        const ok = await saveUserInfo();
+        if (!ok) {
+          logout();
+        }
+      }
+
+      setIsLoading(false);
+    };
+
+    loadUser();
   }, []);
+
+  const saveUserInfo = async () => {
+    try {
+      const response = await getAdmin();
+      if (!response) return false;
+      setUser(response);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
 
   return (
     <AuthContext.Provider value={{ token, user, login, logout }}>

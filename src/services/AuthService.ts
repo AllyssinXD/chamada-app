@@ -32,7 +32,7 @@ export const getAdmin = async () => {
             }
         })
 
-        const data: AdminProfile = await response.data.user
+        const data: AdminProfile = response.data.user
         return data;
     } catch (err) {
         console.error(err)

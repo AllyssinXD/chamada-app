@@ -1,4 +1,4 @@
 export interface AdminProfile {
-    id: string,
+    _id: string,
     username : string,
 }
