@@ -135,6 +135,10 @@ function ConfirmPresencePage() {
   return (
     <div className="w-full min-h-screen flex items-center justify-center">
       <div className="w-80 space-y-10">
+        <div className="border p-4 rounded-md ">
+        <p className="text-md">App feito por <a className="text-green-500 underline" href="https://instagram.com/alisson_ally_">Alisson Santos Silva</a></p>
+        <p>Por favor, contatar ao lidar com problemas</p>
+        </div>
         <h1 className="text-xl">{chamada?.nome}</h1>
         {!success && (
           <>
