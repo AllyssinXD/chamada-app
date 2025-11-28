@@ -11,10 +11,13 @@ import axios from "axios";
 import { Button } from "./components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 import type ChamadaModel from "./models/ChamadaModel";
-import { getChamada } from "./services/GeneralService";
+import { getChamada, type CustomInputs } from "./services/GeneralService";
 import useGeolocation from "./hooks/useGeolocation";
 import {
+  Github,
   Globe,
+  Instagram,
+  Linkedin,
   Loader2Icon,
   MapPinCheck,
   MapPinOff,
@@ -23,13 +26,14 @@ import {
   Smartphone,
 } from "lucide-react";
 import { useVisitorData } from "@fingerprintjs/fingerprintjs-pro-react";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu";
 
-interface CustomInput {
-  _id: string;
-  type: string;
-  label: string;
-  placeholder: string;
-}
+import Realistic from "react-canvas-confetti/dist/presets/realistic";
 
 export interface Dictionary<T> {
   [key: string]: T;
@@ -262,7 +266,7 @@ function ConfirmPresencePage() {
     );
   else
     return (
-      <div className="w-full min-h-screen flex items-center justify-center">
+      <div className="w-full min-h-screen flex items-center justify-center py-10">
         <div className="w-80 space-y-10">
           <div className="border p-4 rounded-md ">
             <p className="text-md">
@@ -274,7 +278,6 @@ function ConfirmPresencePage() {
                 Alisson Santos Silva
               </a>
             </p>
-            <p>Por favor, contatar ao lidar com problemas</p>
           </div>
           <h1 className="text-xl">{chamada?.nome}</h1>
           {!success && (
@@ -312,24 +315,57 @@ function ConfirmPresencePage() {
                     required
                   />
                 </Field>
-                {customInputs.map((input: CustomInput) => {
+                {customInputs.map((input: CustomInputs) => {
                   return (
                     <Field>
                       <FieldLabel htmlFor="nome-input">
                         {input.label}
                       </FieldLabel>
-                      <Input
-                        id={input._id}
-                        placeholder={input.placeholder}
-                        value={customInputValues[input._id]}
-                        onChange={(e) => {
-                          setCustomInputValues((prev) => {
-                            prev[input._id] = e.target.value;
-                            return prev;
-                          });
-                        }}
-                        required
-                      />
+                      {input.type == "text" && (
+                        <Input
+                          id={input._id}
+                          placeholder={input.placeholder}
+                          value={customInputValues[input._id]}
+                          onChange={(e) => {
+                            setCustomInputValues((prev) => {
+                              prev[input._id] = e.target.value;
+                              return prev;
+                            });
+                          }}
+                          required
+                        />
+                      )}
+                      {input.type == "dropdown" && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Input
+                              readOnly
+                              type="text"
+                              value={customInputValues[input._id] || ""}
+                              placeholder={input.placeholder}
+                            />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-80">
+                            {input.meta.options.map(
+                              (option: any, i: number) => {
+                                return (
+                                  <DropdownMenuItem
+                                    key={input._id + "_" + i}
+                                    onClick={() => {
+                                      setCustomInputValues((prev) => ({
+                                        ...prev,
+                                        [input._id]: option.label,
+                                      }));
+                                    }}
+                                  >
+                                    {option.label}
+                                  </DropdownMenuItem>
+                                );
+                              }
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </Field>
                   );
                 })}
@@ -347,12 +383,42 @@ function ConfirmPresencePage() {
           )}
           {success && (
             <Alert variant="default">
+              <Realistic
+                onInit={(params) => {
+                  params.confetti({
+                    particleCount: 90,
+                  });
+                }}
+              />
               <AlertTitle>Você confirmou sua presença com sucesso.</AlertTitle>
               <AlertDescription>
                 <p>Você não poderá confirmar presença para outras pessoas.</p>
               </AlertDescription>
             </Alert>
           )}
+          <div className="border p-4 rounded-md space-y-4">
+            <p className="text-md">Sobre o desenvolvedor:</p>
+            <div className="flex gap-3">
+              <a href="https://instagram.com/alisson_ally_" target="_blank">
+                <Button variant={"ghost"} size={"icon"}>
+                  <Instagram />
+                </Button>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/alisson-ally/"
+                target="_blank"
+              >
+                <Button variant={"ghost"} size={"icon"}>
+                  <Linkedin />
+                </Button>
+              </a>
+              <a href="https://github.com/allyssinxd" target="_blank">
+                <Button variant={"ghost"} size={"icon"}>
+                  <Github />
+                </Button>
+              </a>
+            </div>
+          </div>
           {displayError && (
             <Alert variant="destructive">
               <AlertTitle>Erro ao confirmar presença.</AlertTitle>
