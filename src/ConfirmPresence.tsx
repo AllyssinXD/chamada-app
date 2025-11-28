@@ -135,11 +135,48 @@ function ConfirmPresencePage() {
     }
   }, [lat, long]);
 
-  if (loading)
+  if (loading || !chamada)
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
         {/*Carregando Geolocalização*/}
         <Loader2Icon className="animate-spin" />
+      </div>
+    );
+  else if (firstLoad)
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center p-6">
+        <div className="max-w-lg w-full bg-card border shadow-md rounded-2xl p-10 space-y-8">
+          {/* Ícone + Título */}
+          <div className="flex flex-col items-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+              <MapPinCheck className="w-8 h-8 text-green-600" />
+            </div>
+            <h1 className="text-2xl font-semibold">
+              Oi! Precisamos da sua{" "}
+              <span className="text-green-500">localização</span>
+            </h1>
+          </div>
+
+          {/* Texto explicativo */}
+          <p className="text-muted-foreground leading-relaxed text-center">
+            É <span className="font-bold text-red-500">muito importante</span>{" "}
+            que você permita a coleta da sua localização. Quando o navegador
+            abrir a <span className="font-medium">tela de permissão</span>,
+            clique em <strong>Permitir</strong> em todas as opções.
+          </p>
+
+          {/* Botão */}
+          <Button
+            className="w-full h-12 text-base gap-2"
+            onClick={() => {
+              requestLocation();
+              setFirstLoad(false);
+            }}
+          >
+            <MapPinCheck className="w-5 h-5" />
+            Permitir Coleta de Localização
+          </Button>
+        </div>
       </div>
     );
   else if (!lat || !long)
@@ -193,43 +230,6 @@ function ConfirmPresencePage() {
           >
             <RefreshCcw className="w-4 h-4" />
             Tentar novamente
-          </Button>
-        </div>
-      </div>
-    );
-  else if (firstLoad)
-    return (
-      <div className="w-full min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-lg w-full bg-card border shadow-md rounded-2xl p-10 space-y-8">
-          {/* Ícone + Título */}
-          <div className="flex flex-col items-center text-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-              <MapPinCheck className="w-8 h-8 text-green-600" />
-            </div>
-            <h1 className="text-2xl font-semibold">
-              Oi! Precisamos da sua{" "}
-              <span className="text-green-500">localização</span>
-            </h1>
-          </div>
-
-          {/* Texto explicativo */}
-          <p className="text-muted-foreground leading-relaxed text-center">
-            É <span className="font-bold text-red-500">muito importante</span>{" "}
-            que você permita a coleta da sua localização. Quando o navegador
-            abrir a <span className="font-medium">tela de permissão</span>,
-            clique em <strong>Permitir</strong> em todas as opções.
-          </p>
-
-          {/* Botão */}
-          <Button
-            className="w-full h-12 text-base gap-2"
-            onClick={() => {
-              requestLocation();
-              setFirstLoad(false);
-            }}
-          >
-            <MapPinCheck className="w-5 h-5" />
-            Permitir Coleta de Localização
           </Button>
         </div>
       </div>
