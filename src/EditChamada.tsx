@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import useProtectedRoute from "./hooks/useProtectedRoute";
 import { Input } from "./components/ui/input";
-import { ArrowDownIcon, LinkIcon, XIcon } from "lucide-react";
+import { ArrowDownIcon, LinkIcon, Loader2Icon, XIcon } from "lucide-react";
 import { Button } from "./components/ui/button";
 import {
   Popover,
@@ -32,7 +32,12 @@ import {
 } from "./components/ui/table";
 import { Field, FieldLabel } from "./components/ui/field";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu";
 
 function EditChamada() {
   useProtectedRoute();
@@ -104,18 +109,21 @@ function EditChamada() {
       console.error("Erro ao salvar alterações:", err);
     }
   };*/
-  const exportXLSM = async ()=>{
-    if(!chamada) return;
+  const exportXLSM = async () => {
+    if (!chamada) return;
     const file = await exportPresences(chamada?._id);
     // Criar um link para download
     const url = window.URL.createObjectURL(new Blob([file]));
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `presencas-${chamada.nome.split(" ").join("")}.xlsx`);
+    link.setAttribute(
+      "download",
+      `presencas-${chamada.nome.split(" ").join("")}.xlsx`
+    );
     document.body.appendChild(link);
     link.click();
     link.remove();
-  }
+  };
 
   // Função para salvar alterações no backend
   const saveAllChanges = async () => {
@@ -184,6 +192,13 @@ function EditChamada() {
   useEffect(() => {
     handleLoadChamada();
   }, [id]);
+
+  if (!chamada)
+    return (
+      <div className="w-full min-h-screen flex justify-center items-center">
+        <Loader2Icon className="animate-spin" />
+      </div>
+    );
 
   return (
     <div className="flex flex-col md:flex-row justify-center gap-10 items-start p-10">
@@ -320,74 +335,83 @@ function EditChamada() {
           <div className="p-2 border rounded-md space-y-4">
             <p className="font-bold">Campos customizados</p>
             {customInputs.map((input) => {
-              return (<>
-                <div className="flex gap-3 justify-between items-end">
-                  <Field>
-                    <FieldLabel htmlFor={input._id + "-label-input"}>
-                      Etiqueta:
-                    </FieldLabel>
-                    <Input
-                      id={input._id + "-label-input"}
-                      placeholder="Etiqueta do seu input personalizado"
-                      value={input.label}
-                      onChange={(e) => {
-                        input.label = e.target.value;
-                        const newInputs = customInputs.map((i) =>
-                          i._id == input._id ? input : i
-                        );
-                        setCustomInputs(newInputs);
-                      }}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor={input._id + "-type-input"}>
-                      Tipo:
-                    </FieldLabel>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Input readOnly value={input.type}/>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>
-                          Texto
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={()=>{
-                            setCustomInputs(prev=>prev.map((i)=>i._id==input._id?input:i))
-                            handleChange("customInputs", JSON.stringify(customInputs))
-                          }
-                        }>
-                          Dropdown
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor={input._id + "-placeholder-input"}>
-                      Placeholder:
-                    </FieldLabel>
-                    <Input
-                      id={input._id + "-placeholder-input"}
-                      placeholder="Placeholder do seu Input"
-                      value={input.placeholder}
-                      onChange={(e) => {
-                        input.placeholder = e.target.value;
-                        const newInputs = customInputs.map((i) =>
-                          i._id == input._id ? input : i
-                        );
-                        setCustomInputs(newInputs);
-                      }}
-                    />
-                  </Field>
-                  <Button
-                    variant={"destructive"}
-                    onClick={() => handleDeleteInput(input._id)}
-                  >
-                    <XIcon />
-                  </Button>
-                </div>
-                {input.type == "dropdown" && <div>
+              return (
+                <>
+                  <div className="flex gap-3 justify-between items-end">
+                    <Field>
+                      <FieldLabel htmlFor={input._id + "-label-input"}>
+                        Etiqueta:
+                      </FieldLabel>
+                      <Input
+                        id={input._id + "-label-input"}
+                        placeholder="Etiqueta do seu input personalizado"
+                        value={input.label}
+                        onChange={(e) => {
+                          input.label = e.target.value;
+                          const newInputs = customInputs.map((i) =>
+                            i._id == input._id ? input : i
+                          );
+                          setCustomInputs(newInputs);
+                        }}
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor={input._id + "-type-input"}>
+                        Tipo:
+                      </FieldLabel>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Input readOnly value={input.type} />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem>Texto</DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              const updated = customInputs.map((i) =>
+                                i._id === input._id
+                                  ? { ...i, type: "dropdown" }
+                                  : i
+                              );
 
-                </div>}</>
+                              setCustomInputs(updated);
+
+                              handleChange(
+                                "customInputs",
+                                JSON.stringify(updated)
+                              );
+                            }}
+                          >
+                            Dropdown
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor={input._id + "-placeholder-input"}>
+                        Placeholder:
+                      </FieldLabel>
+                      <Input
+                        id={input._id + "-placeholder-input"}
+                        placeholder="Placeholder do seu Input"
+                        value={input.placeholder}
+                        onChange={(e) => {
+                          input.placeholder = e.target.value;
+                          const newInputs = customInputs.map((i) =>
+                            i._id == input._id ? input : i
+                          );
+                          setCustomInputs(newInputs);
+                        }}
+                      />
+                    </Field>
+                    <Button
+                      variant={"destructive"}
+                      onClick={() => handleDeleteInput(input._id)}
+                    >
+                      <XIcon />
+                    </Button>
+                  </div>
+                  {input.type == "dropdown" && <div></div>}
+                </>
               );
             })}
             <div className="space-x-3">

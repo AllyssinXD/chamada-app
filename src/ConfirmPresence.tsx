@@ -43,6 +43,7 @@ function ConfirmPresencePage() {
   const [id, setId] = useState(idChamada);
   const [uuid, setUuid] = useState<string | null>(null);
   const [chamada, setChamada] = useState<ChamadaModel>();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [nome, setNome] = useState("");
   const [ip, setIp] = useState("");
   const [displayError, setError] = useState("");
@@ -53,6 +54,7 @@ function ConfirmPresencePage() {
   >({});
 
   const confirmPresence = () => {
+    setButtonDisabled(true);
     if (!id) {
       setError("Id da chamada não foi provido");
       return;
@@ -82,6 +84,9 @@ function ConfirmPresencePage() {
       .catch((err) => {
         console.log(err);
         setError(err.response.data.message);
+      })
+      .finally(() => {
+        setButtonDisabled(false);
       });
   };
 
@@ -129,6 +134,7 @@ function ConfirmPresencePage() {
   }, [error]);
 
   useEffect(() => {
+    console.log(lat, long);
     if (lat && long) {
       if (lat && long) setFirstLoad(false);
       setError("");
@@ -309,7 +315,13 @@ function ConfirmPresencePage() {
                 })}
               </FieldGroup>
               <FieldGroup>
-                <Button onClick={confirmPresence}>Confirmar Presença</Button>
+                <Button disabled={buttonDisabled} onClick={confirmPresence}>
+                  {buttonDisabled ? (
+                    "Confirmar Presença"
+                  ) : (
+                    <Loader2Icon className="animate-spin" />
+                  )}
+                </Button>
               </FieldGroup>
             </>
           )}
