@@ -32,6 +32,7 @@ import {
 } from "./components/ui/table";
 import { Field, FieldLabel } from "./components/ui/field";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./components/ui/dropdown-menu";
 
 function EditChamada() {
   useProtectedRoute();
@@ -319,7 +320,7 @@ function EditChamada() {
           <div className="p-2 border rounded-md space-y-4">
             <p className="font-bold">Campos customizados</p>
             {customInputs.map((input) => {
-              return (
+              return (<>
                 <div className="flex gap-3 justify-between items-end">
                   <Field>
                     <FieldLabel htmlFor={input._id + "-label-input"}>
@@ -342,11 +343,23 @@ function EditChamada() {
                     <FieldLabel htmlFor={input._id + "-type-input"}>
                       Tipo:
                     </FieldLabel>
-                    <Input
-                      id={input._id + "-type-input"}
-                      placeholder="Tipo do seu Input"
-                      value={input.type}
-                    />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Input readOnly value={input.type}/>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>
+                          Texto
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={()=>{
+                            setCustomInputs(prev=>prev.map((i)=>i._id==input._id?input:i))
+                            handleChange("customInputs", JSON.stringify(customInputs))
+                          }
+                        }>
+                          Dropdown
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </Field>
                   <Field>
                     <FieldLabel htmlFor={input._id + "-placeholder-input"}>
@@ -372,6 +385,9 @@ function EditChamada() {
                     <XIcon />
                   </Button>
                 </div>
+                {input.type == "dropdown" && <div>
+
+                </div>}</>
               );
             })}
             <div className="space-x-3">
